@@ -1,8 +1,19 @@
 import React from "react";
 import Logo from "../../../components/Logo/Logo";
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
+import useAuth from "../../../hooks/useAuth";
 
-const Navbar = () => {
+const NavBar = () => {
+  const { user, logOut } = useAuth();
+
+  const handleLogOut = () => {
+    logOut()
+      .then()
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const links = (
     <>
       <li>
@@ -17,12 +28,16 @@ const Navbar = () => {
       <li>
         <NavLink to="/coverage">Coverage Areas</NavLink>
       </li>
-      {/* {
-            user && <>
-                <li><NavLink to="/dashboard/my-parcels">My Parcels</NavLink></li>
-                <li><NavLink to="/dashboard">Dashboard</NavLink></li>
-            </>
-        } */}
+      {user && (
+        <>
+          <li>
+            <NavLink to="/dashboard/my-parcels">My Parcels</NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard">Dashboard</NavLink>
+          </li>
+        </>
+      )}
       <li>
         <NavLink to="">About Us</NavLink>
       </li>
@@ -50,24 +65,35 @@ const Navbar = () => {
             </svg>
           </div>
           <ul
-            tabIndex={-1}
+            tabIndex="-1"
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             {links}
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl">
+        <span className="btn btn-ghost text-xl">
           <Logo></Logo>
-        </a>
+        </span>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">Button</a>
+        {user ? (
+          <a onClick={handleLogOut} className="btn">
+            Log Out
+          </a>
+        ) : (
+          <Link className="btn" to="/login">
+            Log in
+          </Link>
+        )}
+        <Link className="btn btn-primary text-black mx-4" to="/rider">
+          Be a Rider
+        </Link>
       </div>
     </div>
   );
 };
 
-export default Navbar;
+export default NavBar;
