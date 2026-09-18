@@ -2,9 +2,18 @@ import React from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLoaderData } from 'react-router';
 import Swal from 'sweetalert2';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+import useAuth from '../../hooks/useAuth';
 
 const SendParcel = () => {
-    const { register, handleSubmit, control, formState: { errors } } = useForm();
+        const {
+        register,
+        handleSubmit,
+        control,
+        // formState: { errors } 
+    } = useForm();
+    const { user } = useAuth();
+    const axiosSecure = useAxiosSecure();
 
     const serviceCenters = useLoaderData();
     const regionsDuplicate = serviceCenters.map(c => c.region);
@@ -55,7 +64,11 @@ const SendParcel = () => {
         }).then((result) => {
             if (result.isConfirmed) {
 
-                // 
+                // save the parcel info to the database
+                axiosSecure.post('/parcels', data)
+                    .then(res => {
+                        console.log('after saving parcel', res.data);
+                    })
 
                 // Swal.fire({
                 //     title: "Deleted!",
@@ -101,13 +114,17 @@ const SendParcel = () => {
                     <fieldset className="fieldset">
                         <h4 className="text-2xl font-semibold">Sender Details</h4>
                         {/* sender name */}
-                        <label className="label">Sender Name</label>
-                        <input type="text" {...register('senderName')} className="input w-full" placeholder="Sender Name" />
+                        <label className="label">Sener Name</label>
+                       <input type="text" {...register('senderName')} 
+                        defaultValue={user?.displayName}
+                        className="input w-full" placeholder="Sender Name" />
 
                         {/* sender email */}
-                        <label className="label">Sender Email</label>
-                        <input type="text" {...register('senderEmail')} className="input w-full" placeholder="Sender Email" />
-
+                        <label className="label">Sener Email</label>
+                        <input type="text" {...register('senderEmail')}
+                            defaultValue={user?.email}
+                            className="input w-full" placeholder="Sender Email" />
+                        
                         {/* sender region */}
                         <fieldset className="fieldset">
                             <legend className="fieldset-legend">Sender Regions</legend>
@@ -138,9 +155,7 @@ const SendParcel = () => {
                         <label className="label mt-4">Sender Address</label>
                         <input type="text" {...register('senderAddress')} className="input w-full" placeholder="Sender Address" />
 
-                        {/* sender District */}
-                        <label className="label mt-4">Sender District</label>
-                        <input type="text" {...register('senderDistrict')} className="input w-full" placeholder="Sender District" />
+                        
                     </fieldset>
                     {/* receiver Details */}
                     <fieldset className="fieldset">
